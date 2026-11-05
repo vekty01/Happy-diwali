@@ -1,1 +1,702 @@
-ghgfhvfybhjbc
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>शुभ दीपावली | Happy Diwali</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Poppins:wght@300;400;500;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #06070c;
+            --primary: #f59e0b;
+            --card-bg: rgba(15, 17, 26, 0.7);
+            --card-border: rgba(245, 158, 11, 0.18);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 50% 5%, rgba(217, 119, 6, 0.15) 0%, transparent 55%),
+                radial-gradient(circle at 50% 95%, rgba(76, 29, 149, 0.12) 0%, transparent 55%);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ---------------- ENTRANCE OVERLAY ---------------- */
+        .entry-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #121420 0%, #06070c 100%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            text-align: center;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s ease;
+        }
+
+        .entry-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .entry-title {
+            font-family: 'Cinzel Decorative', 'Tiro Devanagari Hindi', cursive;
+            font-size: 2.6rem;
+            color: #fbbf24;
+            margin: 16px 0 8px;
+            animation: textGlow 3s ease-in-out infinite alternate;
+        }
+
+        .entry-subtitle {
+            font-family: 'Tiro Devanagari Hindi', serif;
+            font-size: 1.15rem;
+            color: #cbd5e1;
+            margin-bottom: 30px;
+        }
+
+        /* 3D Modern Button */
+        .btn-3d {
+            background: linear-gradient(145deg, #f59e0b, #d97706);
+            color: #ffffff;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #b45309, 0 12px 25px rgba(245, 158, 11, 0.3);
+            transition: all 0.1s ease;
+            font-family: 'Tiro Devanagari Hindi', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #b45309, 0 6px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-entry {
+            padding: 16px 44px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+        }
+
+        /* ---------------- CONTAINER ---------------- */
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 24px 16px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            animation: fadeInPage 0.8s ease;
+        }
+
+        .sender-top-banner {
+            width: 100%;
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid var(--card-border);
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: slideDown 0.6s ease;
+        }
+
+        .sender-top-banner span {
+            font-family: 'Tiro Devanagari Hindi', serif;
+            font-size: 1.15rem;
+            color: #fbbf24;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Minimal 3D Diya Animation */
+        .diya-stage {
+            perspective: 1000px;
+            width: 130px;
+            height: 105px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: floatDiya 4s ease-in-out infinite;
+            margin: 5px 0;
+        }
+
+        .diya-wrap {
+            position: relative;
+            width: 110px;
+            height: 60px;
+        }
+
+        .diya-body {
+            width: 110px;
+            height: 48px;
+            background: linear-gradient(180deg, #d97706 0%, #92400e 70%, #451a03 100%);
+            border-radius: 0 0 55px 55px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.85), inset 0 2px 5px rgba(255, 215, 0, 0.35);
+            position: absolute;
+            bottom: 0;
+        }
+
+        .diya-rim {
+            width: 110px;
+            height: 22px;
+            background: linear-gradient(90deg, #92400e, #f59e0b, #92400e);
+            border-radius: 50%;
+            position: absolute;
+            top: -9px;
+        }
+
+        .diya-oil {
+            width: 96px;
+            height: 16px;
+            background: radial-gradient(ellipse at center, #451a03 0%, #170701 100%);
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 7px;
+        }
+
+        .flame {
+            position: absolute;
+            top: -46px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 48px;
+            background: linear-gradient(to top, rgba(59, 130, 246, 0.85) 0%, #fff7ed 25%, #f59e0b 60%, #dc2626 90%, transparent 100%);
+            border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+            filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.9));
+            animation: flameFlicker 1.2s ease-in-out infinite alternate;
+            transform-origin: bottom center;
+        }
+
+        /* Greeting Card */
+        .greeting-card {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 30px 22px;
+            text-align: center;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(16px);
+            animation: scaleUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .main-title {
+            font-family: 'Cinzel Decorative', 'Tiro Devanagari Hindi', cursive;
+            font-size: 2.1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 14px;
+        }
+
+        .poetic-message {
+            font-family: 'Tiro Devanagari Hindi', serif;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #e2e8f0;
+            margin: 16px 0 20px;
+        }
+
+        .mantra-tag {
+            font-size: 0.95rem;
+            color: #fbbf24;
+            font-weight: 500;
+            letter-spacing: 1px;
+            opacity: 0.95;
+        }
+
+        /* Action Card */
+        .action-card {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 22px;
+            backdrop-filter: blur(16px);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 16px;
+            background: rgba(10, 11, 18, 0.85);
+            border: 1.5px solid rgba(245, 158, 11, 0.25);
+            border-radius: 14px;
+            color: #ffffff;
+            font-size: 1.05rem;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', 'Tiro Devanagari Hindi', sans-serif;
+            text-align: center;
+        }
+
+        .custom-input:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-create {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+        }
+
+        /* Share Section */
+        .share-section {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 6px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .share-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .share-buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .share-btn {
+            padding: 13px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        .share-whatsapp { background: #25D366; }
+        .share-facebook { background: #1877F2; }
+        .share-telegram { background: #229ED9; }
+        .share-native { background: linear-gradient(135deg, #6366f1, #a855f7); }
+        .share-copy { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); }
+
+        /* Crash-Proof Adsterra Banner Slot */
+        .ad-slot-container {
+            width: 100%;
+            background: rgba(12, 13, 20, 0.65);
+            border: 1px dashed rgba(245, 158, 11, 0.25);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .ad-tag {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .footer {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 10px 0;
+            z-index: 1;
+        }
+
+        /* Animations */
+        @keyframes flameFlicker {
+            0% { transform: translateX(-50%) rotate(-1deg) scaleY(1); }
+            50% { transform: translateX(-50%) rotate(1.5deg) scaleY(1.05); }
+            100% { transform: translateX(-50%) rotate(-1.5deg) scaleY(0.96); }
+        }
+
+        @keyframes floatDiya {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+            100% { text-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Particle Background Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Tap Sound Effect -->
+    <audio id="clickSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- Entrance Overlay -->
+    <div id="entryOverlay" class="entry-overlay">
+        <div style="font-size: 3.2rem; animation: floatDiya 3s ease-in-out infinite;">🪔</div>
+        <h1 class="entry-title">शुभ दीपावली</h1>
+        <p class="entry-subtitle" id="overlaySenderText">आपको एक विशेष दीपोत्सव शुभकामना भेजी गई है</p>
+        <button id="entryBtn" class="btn-3d btn-entry">
+            शुभ संदेश देखें ✨
+        </button>
+    </div>
+
+    <!-- Main Viewport Container -->
+    <div class="container">
+        
+        <header class="sender-top-banner">
+            <span id="topSenderName">Prashant की तरफ से</span>
+        </header>
+
+        <!-- Diya Stage -->
+        <div class="diya-stage">
+            <div class="diya-wrap">
+                <div class="flame"></div>
+                <div class="diya-body"></div>
+                <div class="diya-rim">
+                    <div class="diya-oil"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Greeting Card -->
+        <main class="greeting-card">
+            <h2 class="main-title">शुभ दीपावली</h2>
+
+            <p class="poetic-message" id="dynamicMessage">
+                <strong>Prashant</strong> की ओर से आपको और आपके पूरे परिवार को दीपावली की हार्दिक शुभकामनाएं!<br><br>
+                दीपों का यह पावन त्योहार आपके जीवन में सुख, शांति, 
+                समृद्धि और आरोग्य लेकर आए।
+            </p>
+
+            <div class="mantra-tag">
+                ✨ ॐ श्री महालक्ष्म्यै नमः ✨
+            </div>
+        </main>
+
+        <!-- Action Card -->
+        <section class="action-card">
+            <input 
+                type="text" 
+                id="nameInput" 
+                class="custom-input" 
+                placeholder="अपना नाम लिखें..." 
+                maxlength="25"
+                autocomplete="off"
+            >
+
+            <button id="createWishBtn" class="btn-3d btn-create">
+                अपनी विश बनाएं 🪔
+            </button>
+
+            <!-- Share Sheet -->
+            <div id="shareSection" class="share-section">
+                <div class="share-label">शुभकामनाएं साझा करें:</div>
+                <div class="share-buttons-grid">
+                    <a id="shareWa" class="share-btn share-whatsapp" target="_blank" rel="noopener noreferrer">
+                        <span>WhatsApp</span>
+                    </a>
+                    <a id="shareFb" class="share-btn share-facebook" target="_blank" rel="noopener noreferrer">
+                        <span>Facebook</span>
+                    </a>
+                    <a id="shareTg" class="share-btn share-telegram" target="_blank" rel="noopener noreferrer">
+                        <span>Telegram</span>
+                    </a>
+                    <button id="shareNative" class="share-btn share-native">
+                        <span>अन्य ऍप्स</span>
+                    </button>
+                </div>
+                <button id="shareCopy" class="share-btn share-copy" style="width: 100%;">
+                    <span>🔗 लिंक कॉपी करें</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Adsterra Crash-Proof Banner Slot -->
+        <div class="ad-slot-container">
+            <div class="ad-tag">Sponsored Advertisement</div>
+            <div id="adsterra-slot">
+                <!-- 
+                  💡 ADSTERRA BANNER AD: 
+                  यहाँ Adsterra से 300x250 या 728x90 का Banner Code पेस्ट करें।
+                -->
+                <div style="font-size: 0.75rem; color: #64748b; padding: 4px;">
+                    Adsterra Banner Script यहाँ पेस्ट करें
+                </div>
+<script>
+  atOptions = {
+    'key' : '819e266e47bea40c5eac1bdc803f8c90',
+    'format' : 'iframe',
+    'height' : 250,
+    'width' : 300,
+    'params' : {}
+  };
+</script>
+<script src="https://bicea.org/22/819e266e47bea40c5eac1bdc803f8c90"></script>
+            </div>
+        </div>
+
+        <footer class="footer">
+            दीपोत्सव की मंगलकामनाएं | May Light Prevail 🪔
+        </footer>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        // Button Click Sound Setup
+        const clickSound = document.getElementById('clickSound');
+        function playTapSound() {
+            try {
+                clickSound.currentTime = 0;
+                clickSound.volume = 0.3;
+                clickSound.play().catch(e => {});
+            } catch (err) {}
+        }
+
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('click', playTapSound);
+        });
+
+        // Entrance Overlay Handler
+        const entryOverlay = document.getElementById('entryOverlay');
+        const entryBtn = document.getElementById('entryBtn');
+
+        entryBtn.addEventListener('click', () => {
+            entryOverlay.classList.add('hidden');
+            triggerBurst();
+        });
+
+        // URL Name Parameter Logic
+        const urlParams = new URLSearchParams(window.location.search);
+        let senderName = urlParams.get('name') || "Prashant";
+        senderName = senderName.trim();
+
+        const topSenderBanner = document.getElementById('topSenderName');
+        const dynamicMessage = document.getElementById('dynamicMessage');
+        const overlaySenderText = document.getElementById('overlaySenderText');
+
+        function updateGreetingUI(name) {
+            topSenderBanner.innerHTML = `✨ ${name} की तरफ से`;
+            overlaySenderText.innerHTML = `<strong>${name}</strong> ने आपके लिए खास दिवाली संदेश भेजा है!`;
+            dynamicMessage.innerHTML = `
+                <strong>${name}</strong> की ओर से आपको और आपके पूरे परिवार को 
+                दीपावली की हार्दिक शुभकामनाएं!<br><br>
+                दीपों का यह पावन त्योहार आपके जीवन में सुख, शांति, 
+                समृद्धि और अपार खुशियां लेकर आए।
+            `;
+        }
+        updateGreetingUI(senderName);
+
+        // Wish Creation & Sharing Mechanics
+        const nameInput = document.getElementById('nameInput');
+        const createWishBtn = document.getElementById('createWishBtn');
+        const shareSection = document.getElementById('shareSection');
+
+        const shareWa = document.getElementById('shareWa');
+        const shareFb = document.getElementById('shareFb');
+        const shareTg = document.getElementById('shareTg');
+        const shareNative = document.getElementById('shareNative');
+        const shareCopy = document.getElementById('shareCopy');
+
+        let generatedShareUrl = window.location.href;
+
+        createWishBtn.addEventListener('click', () => {
+            const enteredName = nameInput.value.trim();
+            if (!enteredName) {
+                nameInput.focus();
+                nameInput.style.borderColor = "#ef4444";
+                setTimeout(() => nameInput.style.borderColor = "rgba(245, 158, 11, 0.25)", 1000);
+                return;
+            }
+
+            updateGreetingUI(enteredName);
+
+            const urlObj = new URL(window.location.origin + window.location.pathname);
+            urlObj.searchParams.set('name', enteredName);
+            generatedShareUrl = urlObj.toString();
+
+            const festiveText = `✨ *${enteredName}* ने आपके लिए दिवाली का सुंदर शुभकामना संदेश भेजा है!%0Aनीचे दिए गए लिंक पर क्लिक करके देखें:%0A`;
+            
+            shareWa.href = `https://api.whatsapp.com/send?text=${festiveText}${encodeURIComponent(generatedShareUrl)}`;
+            shareFb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(generatedShareUrl)}`;
+            shareTg.href = `https://t.me/share/url?url=${encodeURIComponent(generatedShareUrl)}&text=${festiveText}`;
+
+            shareSection.style.display = 'flex';
+            createWishBtn.textContent = 'आपकी विश तैयार है! ✓';
+            triggerBurst();
+
+            setTimeout(() => {
+                createWishBtn.textContent = 'पुनः नाम बदलें';
+            }, 2500);
+
+            shareSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        shareNative.addEventListener('click', async () => {
+            const currentName = nameInput.value.trim() || senderName;
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'शुभ दीपावली संदेश',
+                        text: `${currentName} ने आपके लिए दिवाली की विशेष शुभकामनाएं भेजी हैं!`,
+                        url: generatedShareUrl,
+                    });
+                } catch (err) {}
+            } else {
+                copyToClipboard(generatedShareUrl);
+            }
+        });
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = shareCopy.innerHTML;
+                shareCopy.innerHTML = '<span>कॉपी हो गया! ✓</span>';
+                setTimeout(() => {
+                    shareCopy.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+        shareCopy.addEventListener('click', () => copyToClipboard(generatedShareUrl));
+
+        // Ambient Sparkles Background Canvas
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = height + Math.random() * 20;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedY = Math.random() * 1 + 0.3;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.6 + 0.2;
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                this.opacity -= 0.002;
+                if (this.y < -10 || this.opacity <= 0) this.reset();
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(245, 158, 11, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        const particles = Array.from({ length: 40 }, () => new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        function triggerBurst() {
+            for (let i = 0; i < 20; i++) {
+                const p = new Particle();
+                p.y = height * 0.45;
+                p.x = width * 0.5 + (Math.random() - 0.5) * 120;
+                p.speedY = (Math.random() - 0.5) * 6;
+                p.speedX = (Math.random() - 0.5) * 6;
+                particles.push(p);
+            }
+        }
+    </script>
+</body>
+</html>
